@@ -1,0 +1,10 @@
+{
+  "id": "color-marker",
+  "name": "Color Marker",
+  "version": "1.0.0",
+  "minAppVersion": "1.1.0",
+  "description": "Mark folders and notes with color labels from the right-click menu — 12 calendar-style colors you can add or remove anytime.",
+  "author": "Central Brain Trust",
+  "authorUrl": "https://www.centralbraintrust.com",
+  "isDesktopOnly": false
+}

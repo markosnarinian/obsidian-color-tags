@@ -1,0 +1,74 @@
+/* Color Marker — styles */
+
+/* "Liquid glass" pill around the item's name in the file explorer:
+   translucent tinted background, glassy highlight and full-round corners. */
+.nav-file-title.color-marker-item,
+.nav-folder-title.color-marker-item {
+  color: var(--color-marker);
+  background: linear-gradient(
+    160deg,
+    rgba(var(--color-marker-rgb), 0.3),
+    rgba(var(--color-marker-rgb), 0.12)
+  );
+  border: 1px solid rgba(var(--color-marker-rgb), 0.38);
+  border-radius: 999px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Keep the pill readable and glassy on hover/selection too. */
+.nav-file-title.color-marker-item:hover,
+.nav-folder-title.color-marker-item:hover {
+  background: linear-gradient(
+    160deg,
+    rgba(var(--color-marker-rgb), 0.42),
+    rgba(var(--color-marker-rgb), 0.2)
+  );
+}
+
+.nav-file-title.color-marker-item.is-active,
+.nav-file-title.color-marker-item.has-focus {
+  border-color: rgba(var(--color-marker-rgb), 0.7);
+}
+
+/* Colored dot before the item's name, calendar-label style. */
+.color-marker-item .nav-file-title-content::before,
+.color-marker-item .nav-folder-title-content::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-marker);
+  box-shadow: 0 0 4px rgba(var(--color-marker-rgb), 0.8);
+  margin-right: 6px;
+  vertical-align: baseline;
+}
+
+/* Fallback modal: 12-swatch grid. */
+.color-marker-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin: 12px 0 16px;
+}
+
+.color-marker-cell {
+  width: 100%;
+  aspect-ratio: 1;
+  min-height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--background-modifier-border);
+  cursor: pointer;
+  padding: 0;
+}
+
+.color-marker-cell:hover {
+  transform: scale(1.12);
+  border-color: var(--text-normal);
+}
+
+.color-marker-remove {
+  width: 100%;
+}
