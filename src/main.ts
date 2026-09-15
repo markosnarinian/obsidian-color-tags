@@ -1,3 +1,12 @@
+/*
+ * Color Tags — an Obsidian plugin.
+ * Copyright (c) 2026 Markos Narinian. MIT licensed; see LICENSE.
+ *
+ * Derived from Color Marker by Central Brain Trust (MIT):
+ * https://github.com/ruisloan/obsidian-color-marker
+ * Copyright (c) 2026 Central Brain Trust
+ */
+
 import { App, Menu, MenuItem, Modal, Plugin, TAbstractFile, WorkspaceLeaf } from "obsidian";
 import { COLORS, hexToRgb } from "./colors";
 

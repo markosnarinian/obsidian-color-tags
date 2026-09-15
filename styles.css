@@ -1,4 +1,10 @@
-/* Color Tags — styles */
+/*
+ * Color Tags — styles.
+ * Copyright (c) 2026 Markos Narinian. MIT licensed; see LICENSE.
+ *
+ * Derived from Color Marker by Central Brain Trust (MIT):
+ * https://github.com/ruisloan/obsidian-color-marker
+ */
 
 /*
  * The resting tint. Deliberately the only rule that touches an explorer row:
