@@ -1,0 +1,17 @@
+# npm
+node_modules/
+package-lock.json
+
+# The compiled bundle is a build output; it ships via GitHub releases.
+main.js
+*.js.map
+
+# obsidian
+data.json
+
+# macOS
+.DS_Store
+
+# editors
+.idea/
+.vscode/
