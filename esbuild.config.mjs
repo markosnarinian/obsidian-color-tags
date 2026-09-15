@@ -1,6 +1,6 @@
 import esbuild from "esbuild";
 import process from "process";
-import builtins from "builtin-modules";
+import { builtinModules } from "module";
 
 const banner = `/*
 Color Tags — https://github.com/markosnarinian/obsidian-color-tags
@@ -20,7 +20,7 @@ const context = await esbuild.context({
 	banner: { js: banner },
 	entryPoints: ["src/main.ts"],
 	bundle: true,
-	external: ["obsidian", "electron", ...builtins],
+	external: ["obsidian", "electron", ...builtinModules, ...builtinModules.map((m) => `node:${m}`)],
 	format: "cjs",
 	target: "es2018",
 	logLevel: "info",

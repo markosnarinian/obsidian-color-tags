@@ -89,6 +89,13 @@ export default class ColorTagsPlugin extends Plugin {
 			})
 		);
 
+		// A frame queued as the plugin unloads would repaint rows that onunload
+		// has already cleared, so drop it.
+		this.register(() => {
+			if (this.frame) window.cancelAnimationFrame(this.frame);
+			this.frame = 0;
+		});
+
 		// Paint the explorer now and whenever it re-renders.
 		this.app.workspace.onLayoutReady(() => {
 			this.watchExplorers();
@@ -165,7 +172,8 @@ export default class ColorTagsPlugin extends Plugin {
 
 	private scheduleApply() {
 		if (this.frame) return;
-		this.frame = requestAnimationFrame(() => {
+		// window-qualified so this resolves against the right window in popouts.
+		this.frame = window.requestAnimationFrame(() => {
 			this.frame = 0;
 			this.applyAll();
 		});

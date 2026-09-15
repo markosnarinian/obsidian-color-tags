@@ -7,6 +7,9 @@ on:
 
 permissions:
   contents: write
+  # Required to mint build provenance attestations for the release assets.
+  id-token: write
+  attestations: write
 
 jobs:
   build:
@@ -22,6 +25,16 @@ jobs:
         run: |
           npm install
           npm run build
+
+      # Lets anyone verify the released files were built from this repo by this
+      # workflow: `gh attestation verify main.js -R <owner>/<repo>`
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
 
       - name: Create release
         env:
