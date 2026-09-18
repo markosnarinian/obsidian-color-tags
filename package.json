@@ -1,6 +1,6 @@
 {
   "name": "obsidian-color-tags",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Tag folders and notes with the seven macOS Finder colors, right from the file explorer's context menu.",
   "main": "main.js",
   "scripts": {
@@ -8,10 +8,19 @@
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
     "version": "node version-bump.mjs && git add manifest.json versions.json"
   },
-  "keywords": ["obsidian", "obsidian-plugin", "finder", "tags", "colors"],
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "finder",
+    "tags",
+    "colors"
+  ],
   "author": "Markos Narinian",
   "license": "MIT",
-  "repository": { "type": "git", "url": "git+https://github.com/markosnarinian/obsidian-color-tags.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markosnarinian/obsidian-color-tags.git"
+  },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "esbuild": "^0.20.0",
