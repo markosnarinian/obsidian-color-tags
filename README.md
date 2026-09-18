@@ -20,7 +20,7 @@ dimension — only the color differs.
 ## Features
 
 - **Finder colors, plus five more.** Start with the familiar macOS palette, then
-  use teal, cyan, indigo, charcoal and brown for more categories.
+  use teal, cyan, indigo, black and brown for more categories.
 - **Tint, not decoration.** The item's name is colored, with a subtle wash behind
   the row. No dots, no badges, no pills.
 - **Folder chevrons take the color too**, so they stay legible against the tint.
@@ -45,7 +45,7 @@ dimension — only the color differs.
 | Teal | `#20BFA9` |
 | Cyan | `#26BDEB` |
 | Indigo | `#6476DC` |
-| Charcoal | `#59636E` |
+| Black | `#59636E` |
 | Brown | `#A8754F` |
 
 ## Usage

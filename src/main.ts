@@ -133,7 +133,9 @@ export default class ColorTagsPlugin extends Plugin {
 		const current = this.colors[file.path];
 		for (const c of COLORS) {
 			menu.addItem((item) => {
-				item.setTitle(c.name).onClick(() => void this.setColor(file.path, c.value));
+				item
+					.setTitle(c.emoji ? `${c.emoji} ${c.name}` : c.name)
+					.onClick(() => void this.setColor(file.path, c.value));
 				if (typeof item.setChecked === "function") item.setChecked(current === c.value);
 			});
 		}
