@@ -11,16 +11,26 @@
  * no radius, border, padding or shadow, so a tagged row keeps exactly the
  * geometry your theme gives every other row.
  *
- * Hover, active and selected states are not styled here at all. The plugin
- * sets Obsidian's own --nav-item-* variables on the row instead, so Obsidian
- * paints those states in the tag color using its own rules — which is what
- * keeps the hover overlay's shape untouched. The :not() guards matter: this
- * rule and Obsidian's `.tree-item-self.is-active` rule have equal specificity,
- * so without them ours would win on source order and flatten the active and
- * selected states back to the resting tint.
+ * The plugin sets Obsidian's own --nav-item-* variables on the row, so Obsidian
+ * paints hover, active and selected states in the tag color using its own rules
+ * — which keeps the hover overlay's shape untouched. The light-theme gray
+ * exception below only darkens its text and icons for legibility. The :not()
+ * guards matter: this rule and Obsidian's `.tree-item-self.is-active` rule have
+ * equal specificity, so without them ours would win on source order and flatten
+ * the active and selected states back to the resting tint.
  */
 .tree-item-self.color-tags-item:not(.is-active):not(.is-selected) {
 	background-color: rgba(var(--color-tag-rgb), 0.1);
+}
+
+/* Finder gray is too pale to read as text against Obsidian's light canvas. */
+.theme-light .tree-item-self.color-tags-gray {
+	--nav-item-color: #707070 !important;
+	--nav-item-color-hover: #707070 !important;
+	--nav-item-color-active: #707070 !important;
+	--nav-item-color-selected: #707070 !important;
+	--nav-collapse-icon-color: #707070 !important;
+	--nav-collapse-icon-color-collapsed: #707070 !important;
 }
 
 /* Fallback modal: swatch grid. */

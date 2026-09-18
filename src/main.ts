@@ -11,6 +11,8 @@ import { App, Menu, MenuItem, Modal, Plugin, TAbstractFile, WorkspaceLeaf } from
 import { COLORS, hexToRgb } from "./colors";
 
 const MARK_CLASS = "color-tags-item";
+const GRAY_CLASS = "color-tags-gray";
+const GRAY = "#A6A6A6";
 
 /**
  * Obsidian paints file explorer rows from these custom properties, so setting
@@ -204,10 +206,11 @@ export default class ColorTagsPlugin extends Plugin {
 			el.style.setProperty("--color-tag-rgb", rgb);
 		}
 		el.classList.add(MARK_CLASS);
+		el.classList.toggle(GRAY_CLASS, color === GRAY);
 	}
 
 	private clear(el: HTMLElement) {
-		el.classList.remove(MARK_CLASS);
+		el.classList.remove(MARK_CLASS, GRAY_CLASS);
 		for (const name of TAG_VARS) el.style.removeProperty(name);
 	}
 }
