@@ -1,7 +1,13 @@
 # Color Tags
 
+[![Obsidian Downloads](https://img.shields.io/badge/dynamic/json?logo=obsidian&color=%23483699&label=downloads&query=%24%5B%22color-tags%22%5D.downloads&url=https%3A%2F%2Fraw.githubusercontent.com%2Fobsidianmd%2Fobsidian-releases%2Fmaster%2Fcommunity-plugin-stats.json)](https://obsidian.md/plugins?id=color-tags)
+[![Latest release](https://img.shields.io/github/v/release/markosnarinian/obsidian-color-tags)](https://github.com/markosnarinian/obsidian-color-tags/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/markosnarinian/obsidian-color-tags)](LICENSE)
+
 Tag folders and notes with color from the file explorer's right-click menu, using
 the seven familiar macOS Finder colors plus five vibrant additions.
+
+Get it on the [Obsidian community plugin page](https://obsidian.md/plugins?id=color-tags).
 
 ![Color Tags in the Obsidian file explorer, showing folders tinted orange, purple, green, blue and red](docs/screenshot.png)
 
@@ -58,8 +64,8 @@ dimension — only the color differs.
 
 ### Community plugins
 
-Not yet listed — the submission is in review. Until it lands, use one of the
-options below.
+Search for **Color Tags** in Settings → Community plugins → Browse, or install
+directly from the [plugin page](https://obsidian.md/plugins?id=color-tags).
 
 ### BRAT
 
