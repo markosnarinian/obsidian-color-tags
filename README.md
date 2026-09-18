@@ -47,11 +47,11 @@ dimension — only the color differs.
 | Green | `#64C947` |
 | Blue | `#0A7AFF` |
 | Purple | `#CC73E1` |
-| Gray | `#A6A6A6` |
+| Gray | `#59636E` |
 | Teal | `#20BFA9` |
 | Cyan | `#26BDEB` |
 | Indigo | `#6476DC` |
-| Black | `#59636E` |
+| Black | `#000000` |
 | Brown | `#A8754F` |
 
 ## Usage

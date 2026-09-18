@@ -22,11 +22,11 @@ export const COLORS: TagColor[] = [
 	{ name: "Green", value: "#64C947", emoji: "🟢" },
 	{ name: "Blue", value: "#0A7AFF", emoji: "🔵" },
 	{ name: "Purple", value: "#CC73E1", emoji: "🟣" },
-	{ name: "Gray", value: "#A6A6A6", emoji: "⚪" },
+	{ name: "Gray", value: "#59636E", emoji: "⚪" },
 	{ name: "Teal", value: "#20BFA9" },
 	{ name: "Cyan", value: "#26BDEB" },
 	{ name: "Indigo", value: "#6476DC" },
-	{ name: "Black", value: "#59636E", emoji: "⚫" },
+	{ name: "Black", value: "#000000", emoji: "⚫" },
 	{ name: "Brown", value: "#A8754F", emoji: "🟤" },
 ];
 
