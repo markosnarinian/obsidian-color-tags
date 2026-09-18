@@ -1,7 +1,7 @@
 # Color Tags
 
 Tag folders and notes with color from the file explorer's right-click menu, using
-the seven colors macOS Finder uses for its tags.
+the seven familiar macOS Finder colors plus five vibrant additions.
 
 ![Color Tags in the Obsidian file explorer, showing folders tinted orange, purple, green, blue and red](docs/screenshot.png)
 
@@ -19,8 +19,8 @@ dimension — only the color differs.
 
 ## Features
 
-- **Seven Finder colors.** The same palette macOS uses, so a red folder here reads
-  the same as a red folder in Finder.
+- **Finder colors, plus five more.** Start with the familiar macOS palette, then
+  use teal, cyan, indigo, charcoal and brown for more categories.
 - **Tint, not decoration.** The item's name is colored, with a subtle wash behind
   the row. No dots, no badges, no pills.
 - **Folder chevrons take the color too**, so they stay legible against the tint.
@@ -33,15 +33,20 @@ dimension — only the color differs.
 
 ## The colors
 
-| | Name | Hex |
-| --- | --- | --- |
-| 🔴 | Red | `#FF5257` |
-| 🟠 | Orange | `#FF9A34` |
-| 🟡 | Yellow | `#FFC72C` |
-| 🟢 | Green | `#64C947` |
-| 🔵 | Blue | `#0A7AFF` |
-| 🟣 | Purple | `#CC73E1` |
-| ⚪ | Gray | `#A6A6A6` |
+| Name | Hex |
+| --- | --- |
+| Red | `#FF5257` |
+| Orange | `#FF9A34` |
+| Yellow | `#FFC72C` |
+| Green | `#64C947` |
+| Blue | `#0A7AFF` |
+| Purple | `#CC73E1` |
+| Gray | `#A6A6A6` |
+| Teal | `#20BFA9` |
+| Cyan | `#26BDEB` |
+| Indigo | `#6476DC` |
+| Charcoal | `#59636E` |
+| Brown | `#A8754F` |
 
 ## Usage
 
@@ -104,9 +109,9 @@ by **Central Brain Trust** ([centralbraintrust.com](https://www.centralbraintrus
 released under the MIT license. The context-menu integration, path-keyed storage
 and rename/move tracking are its work, and this fork would not exist without it.
 
-This fork swaps in the macOS Finder palette, drops the colored dot, stops the
-plugin from altering the shape of file explorer rows, tints folder chevrons, and
-moves the source to TypeScript.
+This fork uses the macOS Finder palette plus five additional colors, drops the
+colored dot, stops the plugin from altering the shape of file explorer rows,
+tints folder chevrons, and moves the source to TypeScript.
 
 ## License
 

@@ -1,7 +1,7 @@
 {
   "name": "obsidian-color-tags",
-  "version": "1.0.2",
-  "description": "Tag folders and notes with the seven macOS Finder colors, right from the file explorer's context menu.",
+  "version": "1.0.3",
+  "description": "Tag folders and notes with macOS Finder colors plus five vibrant additions, right from the file explorer's context menu.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",

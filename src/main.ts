@@ -53,10 +53,10 @@ export default class ColorTagsPlugin extends Plugin {
 		this.registerEvent(
 			this.app.workspace.on("file-menu", (menu, file) => {
 				menu.addItem((item) => {
-					item.setTitle("Color tag").setIcon("palette");
+					item.setTitle("Color tag");
 					const withSubmenu = item as MenuItem & { setSubmenu?: () => Menu };
 					if (typeof withSubmenu.setSubmenu === "function") {
-						// Desktop: a proper submenu of swatches.
+						// Desktop: a proper submenu of color names.
 						this.buildColorMenu(withSubmenu.setSubmenu(), file);
 					} else {
 						// Older builds and mobile: fall back to a swatch dialog.
@@ -133,7 +133,7 @@ export default class ColorTagsPlugin extends Plugin {
 		const current = this.colors[file.path];
 		for (const c of COLORS) {
 			menu.addItem((item) => {
-				item.setTitle(c.emoji + " " + c.name).onClick(() => void this.setColor(file.path, c.value));
+				item.setTitle(c.name).onClick(() => void this.setColor(file.path, c.value));
 				if (typeof item.setChecked === "function") item.setChecked(current === c.value);
 			});
 		}
@@ -141,7 +141,6 @@ export default class ColorTagsPlugin extends Plugin {
 		menu.addItem((item) =>
 			item
 				.setTitle("Remove color")
-				.setIcon("x")
 				.setDisabled(!current)
 				.onClick(() => void this.setColor(file.path, null))
 		);

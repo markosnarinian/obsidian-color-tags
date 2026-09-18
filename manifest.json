@@ -1,9 +1,9 @@
 {
 	"id": "color-tags",
 	"name": "Color Tags",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"minAppVersion": "1.1.0",
-	"description": "Tag folders and notes with color from the right-click menu, using the seven macOS Finder tag colors.",
+	"description": "Tag folders and notes with color from the right-click menu, using macOS Finder colors plus five vibrant additions.",
 	"author": "Markos Narinian",
 	"authorUrl": "https://github.com/markosnarinian",
 	"isDesktopOnly": false
