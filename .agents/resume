@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# No services or authentication to repair. Toolchain and dependencies are
+# preserved in the snapshot; installs belong in setup, never on resume.

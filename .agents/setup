@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+cd -- "$repo_root"
+
+# Match the Node major used by the release workflow without replacing orb tools.
+node_home="$HOME/.local/share/obsidian-color-tags/node22"
+node_bin="$node_home/node_modules/.bin"
+SECONDS=0
+echo "Preparing Node 22..."
+if [[ ! -x "$node_bin/node" ]] || [[ "$("$node_bin/node" -p 'process.versions.node.split(".")[0]')" != 22 ]]; then
+  npm install --prefix "$node_home" --no-save --no-package-lock --no-audit --no-fund node@22
+fi
+export PATH="$node_bin:$PATH"
+echo "Node $(node --version), npm $(npm --version) ready (${SECONDS}s)."
+
+# Agents and supervised services run in new login shells, not this setup shell.
+profile_marker="# obsidian-color-tags orb Node toolchain"
+if ! grep -Fqx "$profile_marker" "$HOME/.bash_profile" 2>/dev/null; then
+  cat >> "$HOME/.bash_profile" <<EOF
+
+$profile_marker
+case "\$PWD" in
+  "$repo_root"|"$repo_root"/*) export PATH="$node_bin:\$PATH" ;;
+esac
+EOF
+fi
+
+SECONDS=0
+echo "Installing project dependencies..."
+# Keep the repository's untracked lockfile and reuse the snapshot's npm cache.
+npm install --prefer-offline --no-audit --no-fund
+echo "Dependencies ready (${SECONDS}s)."
