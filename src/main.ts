@@ -7,7 +7,7 @@
  * Copyright (c) 2026 Central Brain Trust
  */
 
-import { App, Menu, MenuItem, Modal, Notice, Plugin, setIcon, TAbstractFile, TFolder, View, WorkspaceLeaf } from "obsidian";
+import { App, Menu, MenuItem, Modal, Notice, Plugin, PluginSettingTab, Setting, setIcon, TAbstractFile, TFolder, View, WorkspaceLeaf } from "obsidian";
 import { around } from "monkey-around";
 import { COLORS, hexToRgb } from "./colors";
 import { ExplorerItem, sortExplorerItems } from "./explorer-sort";
@@ -40,6 +40,7 @@ const TAG_VARS = [
 interface ColorTagsData {
 	paths?: Record<string, string>;
 	sortByColor?: boolean;
+	colorSortingEnabled?: boolean;
 }
 
 /** Private Obsidian API: capability-checked before installing the wrapper. */
@@ -49,6 +50,7 @@ interface SortableExplorer {
 }
 
 export default class ColorTagsPlugin extends Plugin {
+	colorSortingEnabled = true;
 	private colors: Record<string, string> = {};
 	private sortByColor = false;
 	private sortPatches = new Map<SortableExplorer, () => void>();
@@ -61,11 +63,17 @@ export default class ColorTagsPlugin extends Plugin {
 	async onload() {
 		const data = (await this.loadData()) as ColorTagsData | null;
 		this.colors = data?.paths ?? {};
-		this.sortByColor = data?.sortByColor === true;
+		this.colorSortingEnabled = data?.colorSortingEnabled !== false;
+		this.sortByColor = this.colorSortingEnabled && data?.sortByColor === true;
+		this.addSettingTab(new ColorTagsSettingTab(this.app, this));
 		this.addCommand({
 			id: "toggle-sort-by-color",
 			name: "Toggle sort by color",
-			callback: () => void this.toggleColorSort(),
+			checkCallback: (checking) => {
+				if (!this.colorSortingEnabled) return false;
+				if (!checking) void this.toggleColorSort();
+				return true;
+			},
 		});
 
 		// "Color tag" entry in the right-click menu of files and folders.
@@ -136,12 +144,29 @@ export default class ColorTagsPlugin extends Plugin {
 
 	onunload() {
 		this.unloaded = true;
+		this.removeColorSort();
+		for (const leaf of this.explorerLeaves()) {
+			leaf.querySelectorAll<HTMLElement>("." + MARK_CLASS).forEach((el) => this.clear(el));
+		}
+	}
+
+	async setColorSortingEnabled(enabled: boolean) {
+		this.colorSortingEnabled = enabled;
+		if (!enabled) {
+			this.sortByColor = false;
+			this.removeColorSort();
+		}
+		this.applyAll();
+		await this.saveColors();
+	}
+
+	private removeColorSort() {
+		const hadPatches = this.sortPatches.size > 0;
 		for (const uninstall of this.sortPatches.values()) uninstall();
 		this.sortPatches.clear();
-		this.requestSort();
+		if (hadPatches) this.requestSort();
 		for (const leaf of this.explorerLeaves()) {
 			leaf.querySelector(".color-tags-sort-button")?.remove();
-			leaf.querySelectorAll<HTMLElement>("." + MARK_CLASS).forEach((el) => this.clear(el));
 		}
 	}
 
@@ -153,6 +178,7 @@ export default class ColorTagsPlugin extends Plugin {
 	}
 
 	private async toggleColorSort() {
+		if (!this.colorSortingEnabled) return;
 		const leaves = this.app.workspace.getLeavesOfType("file-explorer");
 		if (!this.sortByColor && leaves.length && !leaves.some((leaf) => {
 			const view = leaf.view as View & Partial<SortableExplorer>;
@@ -169,6 +195,7 @@ export default class ColorTagsPlugin extends Plugin {
 
 	/** Patch each explorer prototype once; add one control to each loaded view. */
 	private syncColorSort() {
+		if (!this.colorSortingEnabled) return;
 		for (const leaf of this.app.workspace.getLeavesOfType("file-explorer")) {
 			const view = leaf.view as View & Partial<SortableExplorer>;
 			const supported = typeof view.getSortedFolderItems === "function" && typeof view.requestSort === "function";
@@ -255,7 +282,11 @@ export default class ColorTagsPlugin extends Plugin {
 	}
 
 	private saveColors() {
-		return this.saveData({ paths: this.colors, sortByColor: this.sortByColor });
+		return this.saveData({
+			paths: this.colors,
+			sortByColor: this.sortByColor,
+			colorSortingEnabled: this.colorSortingEnabled,
+		});
 	}
 
 	/** Re-applies tags whenever the file explorer re-renders its tree. */
@@ -316,6 +347,22 @@ export default class ColorTagsPlugin extends Plugin {
 	private clear(el: HTMLElement) {
 		el.classList.remove(MARK_CLASS, BLACK_CLASS);
 		for (const name of TAG_VARS) el.style.removeProperty(name);
+	}
+}
+
+class ColorTagsSettingTab extends PluginSettingTab {
+	constructor(app: App, private plugin: ColorTagsPlugin) {
+		super(app, plugin);
+	}
+
+	display() {
+		this.containerEl.empty();
+		new Setting(this.containerEl)
+			.setName("Enable color sorting")
+			.setDesc("Show the file explorer's color-sort button and enable the sorting command. Turn off to remove the sorting integration and restore normal ordering. Color tags are unaffected.")
+			.addToggle((toggle) => toggle
+				.setValue(this.plugin.colorSortingEnabled)
+				.onChange((enabled) => this.plugin.setColorSortingEnabled(enabled)));
 	}
 }
 

@@ -66,6 +66,11 @@ Click the **palette button** in the file explorer's toolbar, or run
 **Color Tags: Toggle sort by color** from the command palette. Click again to
 restore normal sorting. The toggle is off by default and remembered across restarts.
 
+To disable the sorting feature entirely, turn off **Settings → Color Tags →
+Enable color sorting**. This removes the toolbar button, disables the command,
+and uninstalls the sorting hook while leaving color tagging active. Re-enabling
+the feature brings back the button with normal sorting selected.
+
 Color sorting applies within every folder, including the vault root. Folders
 stay before files; each is sorted in the palette order above, with untagged items
 last. Within a color, Obsidian's selected name/date sort is preserved. Folder
