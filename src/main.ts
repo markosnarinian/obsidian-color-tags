@@ -7,8 +7,10 @@
  * Copyright (c) 2026 Central Brain Trust
  */
 
-import { App, Menu, MenuItem, Modal, Plugin, TAbstractFile, WorkspaceLeaf } from "obsidian";
+import { App, Menu, MenuItem, Modal, Notice, Plugin, setIcon, TAbstractFile, TFolder, View, WorkspaceLeaf } from "obsidian";
+import { around } from "monkey-around";
 import { COLORS, hexToRgb } from "./colors";
+import { ExplorerItem, sortExplorerItems } from "./explorer-sort";
 
 const MARK_CLASS = "color-tags-item";
 const BLACK_CLASS = "color-tags-black";
@@ -37,10 +39,21 @@ const TAG_VARS = [
 
 interface ColorTagsData {
 	paths?: Record<string, string>;
+	sortByColor?: boolean;
+}
+
+/** Private Obsidian API: capability-checked before installing the wrapper. */
+interface SortableExplorer {
+	getSortedFolderItems(folder: TFolder): ExplorerItem[];
+	requestSort(): void;
 }
 
 export default class ColorTagsPlugin extends Plugin {
 	private colors: Record<string, string> = {};
+	private sortByColor = false;
+	private sortPatches = new Map<SortableExplorer, () => void>();
+	private unloaded = false;
+	private sortWarningShown = false;
 	private observer: MutationObserver | null = null;
 	private observed = new WeakSet<HTMLElement>();
 	private frame = 0;
@@ -48,6 +61,12 @@ export default class ColorTagsPlugin extends Plugin {
 	async onload() {
 		const data = (await this.loadData()) as ColorTagsData | null;
 		this.colors = data?.paths ?? {};
+		this.sortByColor = data?.sortByColor === true;
+		this.addCommand({
+			id: "toggle-sort-by-color",
+			name: "Toggle sort by color",
+			callback: () => void this.toggleColorSort(),
+		});
 
 		// "Color tag" entry in the right-click menu of files and folders.
 		this.registerEvent(
@@ -77,7 +96,10 @@ export default class ColorTagsPlugin extends Plugin {
 						changed = true;
 					}
 				}
-				if (changed) void this.saveColors().then(() => this.applyAll());
+				if (changed) void this.saveColors().then(() => {
+					this.applyAll();
+					if (this.sortByColor) this.requestSort();
+				});
 			})
 		);
 
@@ -100,6 +122,7 @@ export default class ColorTagsPlugin extends Plugin {
 
 		// Paint the explorer now and whenever it re-renders.
 		this.app.workspace.onLayoutReady(() => {
+			if (this.unloaded) return;
 			this.watchExplorers();
 			this.applyAll();
 		});
@@ -112,8 +135,83 @@ export default class ColorTagsPlugin extends Plugin {
 	}
 
 	onunload() {
+		this.unloaded = true;
+		for (const uninstall of this.sortPatches.values()) uninstall();
+		this.sortPatches.clear();
+		this.requestSort();
 		for (const leaf of this.explorerLeaves()) {
+			leaf.querySelector(".color-tags-sort-button")?.remove();
 			leaf.querySelectorAll<HTMLElement>("." + MARK_CLASS).forEach((el) => this.clear(el));
+		}
+	}
+
+	private requestSort() {
+		for (const leaf of this.app.workspace.getLeavesOfType("file-explorer")) {
+			const view = leaf.view as View & Partial<SortableExplorer>;
+			if (typeof view.requestSort === "function") view.requestSort();
+		}
+	}
+
+	private async toggleColorSort() {
+		const leaves = this.app.workspace.getLeavesOfType("file-explorer");
+		if (!this.sortByColor && leaves.length && !leaves.some((leaf) => {
+			const view = leaf.view as View & Partial<SortableExplorer>;
+			return typeof view.getSortedFolderItems === "function" && typeof view.requestSort === "function";
+		})) {
+			new Notice("Color sorting is unavailable. Open the file explorer and try again; this Obsidian version may not support it.");
+			return;
+		}
+		this.sortByColor = !this.sortByColor;
+		this.applyAll();
+		this.requestSort();
+		await this.saveColors();
+	}
+
+	/** Patch each explorer prototype once; add one control to each loaded view. */
+	private syncColorSort() {
+		for (const leaf of this.app.workspace.getLeavesOfType("file-explorer")) {
+			const view = leaf.view as View & Partial<SortableExplorer>;
+			const supported = typeof view.getSortedFolderItems === "function" && typeof view.requestSort === "function";
+			if (supported) {
+				const prototype = Object.getPrototypeOf(view) as SortableExplorer;
+				if (!this.sortPatches.has(prototype)) {
+					const plugin = this;
+					this.sortPatches.set(prototype, around(prototype, {
+						getSortedFolderItems(original) {
+							return function (this: SortableExplorer, folder) {
+								const items = original.call(this, folder);
+								if (!plugin.sortByColor || plugin.unloaded) return items;
+								// A changed private API must not break the explorer.
+								if (!Array.isArray(items) || items.some((item) => typeof item?.file?.path !== "string")) {
+									if (!plugin.sortWarningShown) {
+										plugin.sortWarningShown = true;
+										new Notice("Color sorting is unavailable in this Obsidian version. Normal sorting has been preserved.");
+									}
+									return items;
+								}
+								return sortExplorerItems(items, plugin.colors);
+							};
+						},
+					}));
+				}
+			}
+			const toolbar = view.containerEl.querySelector<HTMLElement>(".nav-buttons-container");
+			if (!toolbar) continue;
+			let button = toolbar.querySelector<HTMLButtonElement>(".color-tags-sort-button");
+			if (!button) {
+				button = toolbar.createEl("button", {
+					cls: "clickable-icon nav-action-button color-tags-sort-button",
+					attr: { type: "button", "aria-label": "Sort by color" },
+				});
+				setIcon(button, "palette");
+				this.registerDomEvent(button, "click", () => void this.toggleColorSort());
+				// Newly materialized views may have sorted before the patch was installed.
+				if (supported && this.sortByColor) view.requestSort?.();
+			}
+			button.disabled = !supported;
+			button.setAttribute("aria-pressed", String(supported && this.sortByColor));
+			button.classList.toggle("is-active", supported && this.sortByColor);
+			button.setAttribute("aria-label", supported ? "Sort by color" : "Color sorting unavailable in this Obsidian version");
 		}
 	}
 
@@ -153,10 +251,11 @@ export default class ColorTagsPlugin extends Plugin {
 		else delete this.colors[path];
 		await this.saveColors();
 		this.applyAll();
+		if (this.sortByColor) this.requestSort();
 	}
 
 	private saveColors() {
-		return this.saveData({ paths: this.colors });
+		return this.saveData({ paths: this.colors, sortByColor: this.sortByColor });
 	}
 
 	/** Re-applies tags whenever the file explorer re-renders its tree. */
@@ -166,9 +265,11 @@ export default class ColorTagsPlugin extends Plugin {
 			this.register(() => this.observer?.disconnect());
 		}
 		for (const el of this.explorerLeaves()) {
-			if (!this.observed.has(el)) {
-				this.observer.observe(el, { childList: true, subtree: true });
-				this.observed.add(el);
+			// Observe the parent too: a deferred view's container can be replaced.
+			const host = el.parentElement ?? el;
+			if (!this.observed.has(host)) {
+				this.observer.observe(host, { childList: true, subtree: true });
+				this.observed.add(host);
 			}
 		}
 	}
@@ -183,6 +284,8 @@ export default class ColorTagsPlugin extends Plugin {
 	}
 
 	private applyAll() {
+		if (this.unloaded) return;
+		this.syncColorSort();
 		for (const root of this.explorerLeaves()) {
 			root.querySelectorAll<HTMLElement>("[data-path]").forEach((el) => {
 				const color = this.colors[el.getAttribute("data-path") ?? ""];

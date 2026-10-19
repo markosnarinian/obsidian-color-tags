@@ -60,6 +60,22 @@ dimension — only the color differs.
 2. Hover **Color tag** and pick a color.
 3. To clear it, right-click again → **Color tag** → **Remove color**.
 
+### Sort by color
+
+Click the **palette button** in the file explorer's toolbar, or run
+**Color Tags: Toggle sort by color** from the command palette. Click again to
+restore normal sorting. The toggle is off by default and remembered across restarts.
+
+Color sorting applies within every folder, including the vault root. Folders
+stay before files; each is sorted in the palette order above, with untagged items
+last. Within a color, Obsidian's selected name/date sort is preserved. Folder
+colors do not propagate to their contents, and no files are moved or renamed.
+
+This feature uses internal file explorer APIs and may need updates after an
+Obsidian upgrade. If those APIs are unavailable, the button is disabled; color
+tagging still works. Other plugins that sort or pin explorer items may conflict
+with color sorting.
+
 ## Installing
 
 ### Community plugins
@@ -103,6 +119,7 @@ contents are never touched.
 npm install
 npm run dev    # watch build
 npm run build  # type-check, then emit a minified main.js
+npm test       # color sorting contract tests
 ```
 
 Source lives in `src/`. The `main.js` at the repo root is a build output — it is
