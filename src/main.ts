@@ -398,19 +398,19 @@ class ColorPickerModal extends Modal {
 				attr: { "aria-label": c.name, title: c.name },
 			});
 			cell.style.backgroundColor = c.value;
-			cell.onclick = () => {
-				void this.plugin.setColor(this.file.path, c.value);
-				this.close();
-			};
+			cell.onclick = () => this.select(c.value);
 		}
 		const remove = this.contentEl.createEl("button", {
 			cls: "color-tags-remove",
 			text: "Remove color",
 		});
-		remove.onclick = () => {
-			void this.plugin.setColor(this.file.path, null);
-			this.close();
-		};
+		remove.onclick = () => this.select(null);
+	}
+
+	private select(color: string | null) {
+		// Dismiss first so mobile taps cannot leave the picker visible while saving.
+		this.close();
+		void this.plugin.setColor(this.file.path, color);
 	}
 
 	onClose() {
