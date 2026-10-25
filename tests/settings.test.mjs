@@ -78,3 +78,17 @@ test("disabling removes sorting, blocks the command, persists, and survives expl
 	plugin.onunload();
 	restarted.plugin.onunload();
 });
+
+test("external data.json changes reload colors and sorting", async () => {
+	const { plugin, view, nativeSorter } = await load({
+		paths: { "blue.md": "#0A7AFF", "red.md": "#FF5257" }, sortByColor: true,
+	});
+	assert.notEqual(view.getSortedFolderItems, nativeSorter);
+	plugin.data = {
+		paths: { "blue.md": "#64C947" }, sortByColor: true, colorSortingEnabled: false,
+	};
+	await plugin.onExternalSettingsChange();
+	assert.equal(view.getSortedFolderItems, nativeSorter, "external settings disable color sorting");
+	assert.equal(plugin.command.checkCallback(true), false);
+	plugin.onunload();
+});

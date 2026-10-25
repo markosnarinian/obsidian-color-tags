@@ -61,10 +61,7 @@ export default class ColorTagsPlugin extends Plugin {
 	private frame = 0;
 
 	async onload() {
-		const data = (await this.loadData()) as ColorTagsData | null;
-		this.colors = data?.paths ?? {};
-		this.colorSortingEnabled = data?.colorSortingEnabled !== false;
-		this.sortByColor = this.colorSortingEnabled && data?.sortByColor === true;
+		await this.loadSettings();
 		this.addSettingTab(new ColorTagsSettingTab(this.app, this));
 		this.addCommand({
 			id: "toggle-sort-by-color",
@@ -140,6 +137,22 @@ export default class ColorTagsPlugin extends Plugin {
 				this.applyAll();
 			})
 		);
+	}
+
+	/** Reload colors when Obsidian Sync replaces this plugin's data.json. */
+	async onExternalSettingsChange() {
+		const wasColorSortingEnabled = this.colorSortingEnabled;
+		await this.loadSettings();
+		if (wasColorSortingEnabled && !this.colorSortingEnabled) this.removeColorSort();
+		this.applyAll();
+		this.requestSort();
+	}
+
+	private async loadSettings() {
+		const data = (await this.loadData()) as ColorTagsData | null;
+		this.colors = data?.paths ?? {};
+		this.colorSortingEnabled = data?.colorSortingEnabled !== false;
+		this.sortByColor = this.colorSortingEnabled && data?.sortByColor === true;
 	}
 
 	onunload() {

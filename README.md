@@ -112,11 +112,21 @@ gh attestation verify main.js -R markosnarinian/obsidian-color-tags
 
 **This plugin does not read or write real macOS Finder tags.** It borrows Finder's
 palette because those colors are familiar, but the tags live in your vault, not in
-the filesystem. Nothing on disk is modified, and the plugin behaves identically on
-Windows, Linux and mobile.
+the filesystem. It changes neither note contents nor Finder metadata, and behaves
+identically on Windows, Linux and mobile.
 
 Tags are stored in the plugin's own `data.json`, keyed by vault path. Your notes'
 contents are never touched.
+
+### Obsidian Sync
+
+Color tags are stored in this plugin's `data.json`, which is a community-plugin
+configuration file. On every device, open **Settings → Sync** and enable
+**Installed community plugins** under **Vault configuration sync**. Enable
+**Active community plugin list** too if Obsidian should enable the plugin on the
+other device automatically. Once the plugin is installed and enabled, it reloads
+color changes that Obsidian Sync downloads; restarting Obsidian also reloads
+them.
 
 ## Development
 
